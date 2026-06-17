@@ -1,1 +1,125 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Function Website</title>
+<script src="https://www.desmos.com/api/v1.6/calculator.js?apiKey=xyz"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin:0;
+  /* Ocean blue → lemon green gradient */
+  background: linear-gradient(135deg, #5bc0eb, #d4ff72);
+  font-size: 16px;
+}
+
+.header {
+  text-align:center;
+  font-weight:bold;
+  font-size:36px;
+  margin:20px 0;
+  color:#111;
+}
+
+.container {
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:20px;
+  padding:20px;
+}
+
+.card {
+  border-radius:15px;
+  padding:15px;
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card Title Links Style */
+.card-title-link {
+  display: inline-block;
+  margin-top: 0;
+  margin-bottom: 15px; /* Keep spacing with elements below */
+  font-weight: bold;
+  font-size: 22px;
+  text-decoration: none; /* Hide underline by default */
+  transition: all 0.2s ease; /* Make color transition smoother */
+  cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+/* Card Title Links Hover Effect: Underline and Smart Invert Color Filter */
+.card-title-link:hover {
+  text-decoration: underline; /* Show underline on hover */
+  filter: invert(1) hue-rotate(180deg); /* High contrast color inversion filter */
+}
+
+iframe {
+  width:100%;
+  height:300px;
+  margin-bottom:10px;
+  border:none;
+}
+
+/* Rich Text Editor Toolbar Style */
+.editor-toolbar {
+  background: #f1f1f1;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  padding: 5px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.editor-toolbar button, .editor-toolbar select, .editor-toolbar input {
+  padding: 3px 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Rich Text Editor Content Area Style */
+.editor-content {
+  width:100%;
+  height:800px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  font-size: 16px;
+}
+
+.editor-content:focus {
+  outline: none;
+  border-color: #3a86ff;
+}
+
+.save-btn { 
+  margin-top:10px; 
+  padding: 8px 16px;
+  font-size: 14px;
+  align-self: flex-start;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="header">My Time In Malaysia</div>
+<div class="container" id="container"></div>
+
+<script>
+// ==================== ⚠️ Firebase Configuration (xindongfang) ⚠️ ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyDNhhwjtt1W2FX5cAXX
