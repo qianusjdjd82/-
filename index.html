@@ -40,4 +40,170 @@
         /* --- LAYER 3: The Massive Blue Hero Banner Section --- */
         .hero-banner { width: 100%; height: 380px; background: linear-gradient(90deg, #0077c0 0%, #005fa3 45%, transparent 85%), url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200') no-repeat right center/cover; position: relative; display: flex; align-items: center; padding-left: 120px; color: #ffffff; }
         .hero-content { max-width: 550px; z-index: 2; }
-        .hero-content h1 { font-size: 40px; font-weight: 400; line-height: 1.1
+        .hero-content h1 { font-size: 40px; font-weight: 400; line-height: 1.15; margin-bottom: 20px; letter-spacing: -0.5px; }
+        .hero-content p { font-size: 18px; opacity: 0.95; margin-bottom: 30px; font-weight: 300; }
+        
+        /* Exact White Pill Button */
+        .register-btn { display: inline-block; background: #ffffff; color: #005fa3; border: none; padding: 10px 24px; font-size: 13px; font-weight: bold; border-radius: 20px; cursor: pointer; text-decoration: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.1s, background-color 0.2s; }
+        .register-btn:hover { background-color: #f0f0f0; transform: translateY(-1px); }
+
+        /* --- LAYER 4: Timeline and Workspace Content Section --- */
+        .content-section { max-width: 1200px; margin: 50px auto; padding: 0 40px; text-align: center; }
+        .section-title { font-size: 32px; font-weight: 400; color: #222222; margin-bottom: 40px; }
+        
+        /* 2026 Timeline Graphic Row */
+        .timeline-container { position: relative; display: flex; justify-content: space-between; align-items: flex-start; background: transparent; margin-top: 40px; gap: 15px; }
+        .timeline-line { position: absolute; top: 32px; left: 5%; width: 90%; height: 1px; background: #dddddd; z-index: 1; }
+        .timeline-year-label { text-align: left; font-size: 16px; font-weight: bold; margin-bottom: 25px; color: #222; padding-left: 10px; }
+
+        /* Grid Cards simulating screenshot bottom list */
+        .time-card { background: #ffffff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 20px; width: 19%; text-align: left; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 2; position: relative; min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; }
+        .time-card::before { content: ""; width: 8px; height: 8px; background: #cccccc; border-radius: 50%; position: absolute; top: -11px; left: 20px; border: 2px solid #fff; }
+        .card-date { font-size: 10px; text-transform: uppercase; color: #666666; font-weight: bold; margin-bottom: 12px; display: block; }
+        .card-title { font-size: 14px; font-weight: bold; color: #111111; margin-bottom: 8px; line-height: 1.3; }
+        
+        /* Dynamic Cloud UI Injection */
+        .cloud-live-indicator { font-size: 13px; color: #0077c0; font-weight: 500; word-break: break-all; margin-top: auto; padding-top: 10px; border-top: 1px dashed #e5e5e5; }
+        
+        .card-btn-stub { display: inline-block; border: 1px solid #333; font-size: 11px; font-weight: bold; padding: 4px 12px; border-radius: 12px; background: transparent; cursor: pointer; align-self: flex-start; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <nav class="utility-bar">
+        <div class="util-left">
+            <span class="util-arrow">⌃</span>
+            <div class="sat-suite-logo-badge">SAT Suite</div>
+        </div>
+        <div class="util-right">
+            <a class="sign-in-btn">Sign In</a>
+            <div class="search-container">
+                <input type="text" id="dbStealthInput" class="search-box" placeholder="Search" onkeydown="handleSearchSubmit(event)">
+            </div>
+        </div>
+    </nav>
+
+    <header class="main-header">
+        <div class="brand-title">SAT Suite of Assessments</div>
+        <ul class="main-nav">
+            <li>Home</li>
+            <li class="active has-drop">SAT</li>
+            <li class="has-drop">SAT School Day</li>
+            <li class="has-drop">PSAT/NMSQT</li>
+            <li class="has-drop">PSAT 10</li>
+            <li class="has-drop">PSAT 8/9</li>
+            <li class="has-drop">Scores</li>
+            <li class="has-drop">Practice</li>
+            <li class="has-drop">For K-12 Educators</li>
+            <li>More</li>
+        </ul>
+    </header>
+
+    <section class="hero-banner">
+        <div class="hero-content">
+            <h1>Show Colleges You're Ready with the #1 Admissions Test</h1>
+            <p>Register for the August SAT by August 7.</p>
+            <a class="register-btn" href="#">Register Now</a>
+        </div>
+    </section>
+
+    <main class="content-section">
+        <h2 class="section-title">Dates and Deadlines</h2>
+        
+        <div class="timeline-year-label">2026</div>
+
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+
+            <div class="time-card">
+                <div>
+                    <span class="card-date">MON, JUN 22, 2026</span>
+                    <div class="card-title">June SAT Score Release</div>
+                </div>
+                <div id="cloudText" class="cloud-live-indicator">Streaming system link...</div>
+                <button class="card-btn-stub">Getting Scores</button>
+            </div>
+
+            <div class="time-card">
+                <div>
+                    <span class="card-date">FRI, AUG 7, 2026</span>
+                    <div class="card-title">Registration Deadline for August SAT</div>
+                </div>
+                <button class="card-btn-stub">See All Dates</button>
+            </div>
+
+            <div class="time-card">
+                <div>
+                    <span class="card-date">TUE, AUG 11, 2026</span>
+                    <div class="card-title">Late Registration Deadline for August SAT</div>
+                </div>
+                <button class="card-btn-stub">See All Dates</button>
+            </div>
+
+            <div class="time-card">
+                <div>
+                    <span class="card-date">SAT, AUG 22, 2026</span>
+                    <div class="card-title">August 22 SAT</div>
+                </div>
+                <button class="card-btn-stub" style="border:none; padding:4px 0;">Details</button>
+            </div>
+
+            <div class="time-card">
+                <div>
+                    <span class="card-date">FRI, SEP 4, 2026</span>
+                    <div class="card-title">August SAT Score Release</div>
+                </div>
+                <button class="card-btn-stub">Getting Scores</button>
+            </div>
+        </div>
+    </main>
+
+<script>
+    // Config values targeting your specialized database link (xindongfang)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDNhhwjtt1W2FX5cAXX20widg9jJlGrBCg",
+        authDomain: "xindongfang.firebaseapp.com",
+        databaseURL: "https://xindongfang-default-rtdb.firebaseio.com",
+        projectId: "xindongfang",
+        storageBucket: "xindongfang.firebasestorage.app",
+        messagingSenderId: "915387291334",
+        appId: "1:915387291334:web:b1629f5173d929fb2d69c7"
+    };
+
+    // Spin up configuration profiles
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Trigger save transaction whenever user types inside Search field and clicks Enter
+    function handleSearchSubmit(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const inputValue = document.getElementById('dbStealthInput').value;
+            if(!inputValue.trim()) return;
+
+            database.ref('test_message').set({
+                text: inputValue
+            }).then(() => {
+                // Clear search box natively upon secure push
+                document.getElementById('dbStealthInput').value = "";
+                alert('Securely synchronized to cloud storage!');
+            }).catch((err) => {
+                console.error("Transmission error: " + err.message);
+            });
+        }
+    }
+
+    // Real-time listener feeding directly into the timeline slot
+    database.ref('test_message').on('value', (snapshot) => {
+        const data = snapshot.val();
+        const displayNode = document.getElementById('cloudText');
+        if (data && data.text) {
+            displayNode.innerText = data.text;
+        } else {
+            displayNode.innerText = "No active server message.";
+        }
+    });
+</script>
+
+</body>
+</html>
