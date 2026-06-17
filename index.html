@@ -10,6 +10,30 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .page-view { display: none; }
         .page-view.active { display: flex; flex-direction: column; }
+        .dropdown-menu { display: none; }
+        
+        #testSliderContainer {
+            overflow: hidden;
+            width: 100%;
+        }
+        #testSlider {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 200%;
+        }
+        .slider-panel {
+            width: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Chat scrollbar styling */
+        .chat-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 9999px;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col relative pt-[73px]">
@@ -17,33 +41,34 @@
     <div id="dashboardPage" class="page-view active min-h-screen">
         <div class="absolute top-0 left-0 right-0 h-[210px] bg-[#eef6ff] -z-10"></div>
 
-        <header class="bg-[#eef6ff] border-b border-gray-200/60 px-8 py-4 flex justify-between items-center fixed top-0 left-0 right-0 z-50 shadow-sm">
-            <div class="flex items-center space-x-2 relative">
-                <div id="logoBtn" class="flex items-center space-x-2 cursor-pointer hover:underline text-blue-600 decoration-blue-600 decoration-2">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="#1e40af">
-                        <path d="M12 2L14.8 8.6L22 9.2L16.5 14L18.2 21L12 17.3L5.8 21L7.5 14L2 9.2L9.2 8.6L12 2Z"/>
-                    </svg>
-                    <span class="font-bold text-xl select-none">Bluebook™</span>
+        <header class="bg-[#eef6ff] border-b border-gray-200/60 fixed top-0 left-0 right-0 z-50 shadow-sm">
+            <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center w-full">
+                <div class="flex items-center space-x-2 relative">
+                    <div id="logoBtn" class="flex items-center space-x-2 cursor-pointer hover:underline text-blue-600 decoration-blue-600 decoration-2">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="#1e40af">
+                            <path d="M12 2L14.8 8.6L22 9.2L16.5 14L18.2 21L12 17.3L5.8 21L7.5 14L2 9.2L9.2 8.6L12 2Z"/>
+                        </svg>
+                        <span class="font-bold text-xl select-none">Bluebook™</span>
+                    </div>
+                    
+                    <div id="dropdownMenu" class="hidden absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
+                        <button id="xdfBtn" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium">新东方雅思模式</button>
+                        <button id="olBtn" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium">欧陆词典模式</button>
+                    </div>
                 </div>
-                
-                <div id="dropdownMenu" class="hidden absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
-                    <button id="xdfBtn" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium">新东方雅思模式</button>
-                    <button id="olBtn" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium">欧陆词典模式</button>
-                </div>
-            </div>
 
-            <div class="flex items-center space-x-3 text-gray-700">
-                <span class="font-medium text-right bg-transparent w-32 select-none">HAOXI XU</span>
-                <div class="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    👤
+                <div class="flex items-center space-x-3 text-gray-700">
+                    <span class="font-medium text-right bg-transparent select-none">HAOXI XU</span>
+                    <div class="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                        👤
+                    </div>
                 </div>
             </div>
         </header>
 
         <main class="max-w-5xl w-full mx-auto px-6 py-12 flex-1 relative z-10">
-            
             <div class="mb-14 pt-4">
-                <h1 class="text-4xl text-blue-700 mb-2 font-light tracking-tight">
+                <h1 class="text-4xl text-blue-700 mb-2 font-light">
                     Welcome, <span id="welcomeName" class="select-none">HAOXI XU</span>. Good luck on test day!
                 </h1>
             </div>
@@ -53,18 +78,34 @@
                     <div class="flex items-center space-x-4">
                         <h2 class="text-2xl font-bold text-gray-900">Your Tests</h2>
                         <div class="inline-flex rounded-md p-0.5 bg-gray-200 text-sm">
-                            <button class="bg-gray-600 text-white px-3 py-1 rounded shadow-sm font-medium">✓ Active</button>
-                            <button class="text-gray-500 px-3 py-1 font-medium">Past</button>
+                            <button id="tabActive" class="bg-gray-600 text-white px-3 py-1 rounded-md shadow-sm font-medium transition-colors">✓ Active</button>
+                            <button id="tabPast" class="text-gray-500 px-3 py-1 font-medium transition-colors border border-transparent rounded-md">Past</button>
                         </div>
                     </div>
                     <a href="#" class="text-blue-600 hover:underline text-sm font-medium">Don't see your test here?</a>
                 </div>
 
-                <div class="bg-white border border-gray-200 rounded-2xl p-8 max-w-md text-center shadow-sm">
-                    <h3 id="testStatusTitle" class="text-lg font-bold text-gray-900 mb-3">You Have No Upcoming Tests</h3>
-                    <p class="text-sm text-black leading-relaxed">
-                        Tests appear here a few weeks before test day. <span class="font-bold">If you got a paper ticket from your school, <a href="#" class="text-blue-600 underline font-normal">sign out</a> and sign in with it.</span>
-                    </p>
+                <div id="testSliderContainer">
+                    <div id="testSlider">
+                        <div class="slider-panel">
+                            <div class="bg-white border border-gray-200 rounded-2xl p-8 max-w-md text-center shadow-sm">
+                                <h3 class="text-lg font-bold text-gray-900 mb-3">You Have No Upcoming Tests</h3>
+                                <p class="text-sm text-black leading-relaxed">
+                                    Tests appear here a few weeks before test day. <span class="font-bold">If you got a paper ticket from your school, <a href="#" class="text-blue-600 underline font-normal">sign out</a> and sign in with it.</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="slider-panel">
+                            <div class="bg-[#f3f3f3] border border-gray-200 rounded-2xl max-w-md shadow-sm flex flex-col h-[220px]">
+                                <div id="chatWindow" class="chat-container flex-1 overflow-y-auto p-4 space-y-3 flex flex-col">
+                                    </div>
+                                <div class="p-2 bg-[#fcfcfc] border-t border-gray-200 flex items-center space-x-2 rounded-b-2xl">
+                                    <input id="chatInput" type="text" placeholder="Type a message..." class="flex-1 bg-white border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:border-gray-400">
+                                    <button id="sendMsgBtn" class="bg-[#07c160] text-white px-4 py-1.5 rounded-md text-sm font-medium active:brightness-95">msg</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -73,7 +114,7 @@
                     <div class="flex items-center space-x-4">
                         <h2 class="text-2xl font-bold text-gray-900">Practice and Prepare</h2>
                         <div class="inline-flex rounded-md p-0.5 bg-gray-200 text-sm">
-                            <button class="bg-gray-600 text-white px-3 py-1 rounded shadow-sm font-medium">✓ Active</button>
+                            <button class="bg-gray-600 text-white px-3 py-1 rounded-md shadow-sm font-medium">✓ Active</button>
                             <button class="text-gray-500 px-3 py-1 font-medium">Past</button>
                         </div>
                     </div>
@@ -96,7 +137,7 @@
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">Explore Big Future</h2>
                 <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col md:flex-row">
                     <div id="imageUploadBox" class="md:w-1/3 min-h-[200px] bg-black flex items-center justify-center cursor-pointer active:brightness-50 relative overflow-hidden group">
-                        <img id="displayImage" src="image_98753d.png" alt="Big Future illustration" class="w-full h-full object-contain">
+                        <img id="displayImage" src="image_98753d.png" alt="Big Future" class="w-full h-full object-contain">
                         <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-medium">Click to Upload</div>
                         <input type="file" id="fileInput" class="hidden" accept="image/*">
                     </div>
@@ -118,45 +159,31 @@
         </footer>
     </div>
 
-    <div id="xdfPage" class="page-view min-h-screen bg-white p-8">
-        <div class="max-w-4xl mx-auto">
-            <button class="back-btn mb-6 text-blue-600 hover:underline flex items-center space-x-1 font-medium">
-                <span>← Back to Dashboard</span>
-            </button>
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">新东方雅思模式</h1>
-            <div class="border border-gray-200 rounded-xl p-6 bg-gray-50">
-                <p class="text-gray-600">Welcome to New Oriental IELTS Mode workspace.</p>
+    <div id="xdfPage" class="page-view min-h-screen bg-[#f5f7fa] w-full absolute top-0 left-0 z-[60]">
+        <header class="bg-white border-b border-gray-200 px-12 py-3 flex justify-between items-center w-full">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center cursor-pointer" id="xdfBackHome">
+                    <span class="text-[#00a0e9] font-black text-2xl tracking-tighter">新东方</span>
+                    <span class="text-[#3b5998] font-bold text-lg ml-1 border-l border-gray-300 pl-2">IELTS</span>
+                </div>
             </div>
-        </div>
+        </header>
+        <div class="p-12 text-center text-gray-500">XDF Content View...</div>
     </div>
 
-    <div id="olPage" class="page-view min-h-screen bg-white p-8">
-        <div class="max-w-4xl mx-auto">
-            <button class="back-btn mb-6 text-blue-600 hover:underline flex items-center space-x-1 font-medium">
-                <span>← Back to Dashboard</span>
-            </button>
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">欧陆词典模式</h1>
-            <div class="border border-gray-200 rounded-xl p-6 bg-gray-50">
-                <p class="text-gray-600">Welcome to Eudic Dictionary Mode workspace.</p>
-            </div>
-        </div>
+    <div id="olPage" class="page-view min-h-screen bg-white p-8 w-full absolute top-0 left-0 z-[60]">
+        <button class="back-btn text-blue-600 mb-4">← Back</button>
+        <h1>欧陆词典模式</h1>
     </div>
 
-    <div id="practicePage" class="page-view min-h-screen bg-white p-8">
-        <div class="max-w-4xl mx-auto">
-            <button class="back-btn mb-6 text-blue-600 hover:underline flex items-center space-x-1 font-medium">
-                <span>← Back to Dashboard</span>
-            </button>
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">Full-Length Practice</h1>
-            <div class="border border-gray-200 rounded-xl p-6 bg-gray-50">
-                <p class="text-gray-600">Welcome to the Full-Length Practice testing interface.</p>
-            </div>
-        </div>
+    <div id="practicePage" class="page-view min-h-screen bg-white p-8 w-full absolute top-0 left-0 z-[60]">
+        <button class="back-btn text-blue-600 mb-4">← Back</button>
+        <h1>Full-Length Practice</h1>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDNhhwjtt1W2FX5cAXX20widg9jJlGrBCg",
@@ -171,26 +198,83 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const syncDocRef = ref(db, 'sharedDocument/globalState');
+        const chatRef = ref(db, 'sharedDocument/chatMessages');
 
-        const imageUploadBox = document.getElementById('imageUploadBox');
-        const fileInput = document.getElementById('fileInput');
-        const displayImage = document.getElementById('displayImage');
+        const tabActive = document.getElementById('tabActive');
+        const tabPast = document.getElementById('tabPast');
+        const testSlider = document.getElementById('testSlider');
+        const chatWindow = document.getElementById('chatWindow');
+        const chatInput = document.getElementById('chatInput');
+        const sendMsgBtn = document.getElementById('sendMsgBtn');
+
+        const myUniqueId = Math.random().toString(36).substring(2, 9);
+
+        function updateTabs(isPast) {
+            if (isPast) {
+                tabPast.className = "bg-gray-600 text-white px-3 py-1 rounded-md shadow-sm font-medium transition-colors";
+                tabPast.innerText = "✓ Past";
+                tabActive.className = "text-gray-500 px-3 py-1 font-medium transition-colors border border-transparent rounded-md";
+                tabActive.innerText = "Active";
+                testSlider.style.transform = 'translateX(-50%)';
+            } else {
+                tabActive.className = "bg-gray-600 text-white px-3 py-1 rounded-md shadow-sm font-medium transition-colors";
+                tabActive.innerText = "✓ Active";
+                tabPast.className = "text-gray-500 px-3 py-1 font-medium transition-colors border border-transparent rounded-md";
+                tabPast.innerText = "Past";
+                testSlider.style.transform = 'translateX(0%)';
+            }
+        }
+
+        tabActive.addEventListener('click', () => updateTabs(false));
+        tabPast.addEventListener('click', () => updateTabs(true));
+
+        // WeChat real-time messenger logic
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (text !== "") {
+                push(chatRef, {
+                    senderId: myUniqueId,
+                    message: text,
+                    timestamp: serverTimestamp()
+                });
+                chatInput.value = "";
+            }
+        }
+
+        sendMsgBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        onValue(chatRef, (snapshot) => {
+            chatWindow.innerHTML = "";
+            const data = snapshot.val();
+            if (data) {
+                Object.values(data).forEach(msg => {
+                    const isMe = msg.senderId === myUniqueId;
+                    const msgWrapper = document.createElement('div');
+                    msgWrapper.className = `flex w-full ${isMe ? 'justify-end' : 'justify-start'}`;
+                    
+                    const msgBubble = document.createElement('div');
+                    msgBubble.className = `max-w-[70%] text-sm px-3 py-2 rounded-xl break-words leading-relaxed ${
+                        isMe ? 'bg-[#95ec69] text-black rounded-tr-none shadow-sm' : 'bg-white text-black rounded-tl-none border border-gray-200 shadow-sm'
+                    }`;
+                    msgBubble.innerText = msg.message;
+                    
+                    msgWrapper.appendChild(msgBubble);
+                    chatWindow.appendChild(msgWrapper);
+                });
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        });
+
+        // Interface routers layout config
         const logoBtn = document.getElementById('logoBtn');
         const dropdownMenu = document.getElementById('dropdownMenu');
-        
-        const syncDocRef = ref(db, 'sharedDocument/globalState');
+        logoBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('hidden'); });
+        document.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
 
-        // Toggle dropdown on explicit click
-        logoBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('hidden');
-        });
-
-        document.addEventListener('click', () => {
-            dropdownMenu.classList.add('hidden');
-        });
-
-        // Routing Logic
         const pages = {
             dashboard: document.getElementById('dashboardPage'),
             xdf: document.getElementById('xdfPage'),
@@ -198,44 +282,34 @@
             practice: document.getElementById('practicePage')
         };
 
-        function switchPage(targetPageId) {
+        function switchPage(id) {
             Object.values(pages).forEach(p => p.classList.remove('active'));
-            pages[targetPageId].classList.add('active');
+            pages[id].classList.add('active');
             window.scrollTo(0, 0);
         }
 
         document.getElementById('xdfBtn').addEventListener('click', () => switchPage('xdf'));
+        document.getElementById('xdfBackHome').addEventListener('click', () => switchPage('dashboard'));
         document.getElementById('olBtn').addEventListener('click', () => switchPage('ol'));
         document.getElementById('practiceCard').addEventListener('click', () => switchPage('practice'));
-        
-        document.querySelectorAll('.back-btn').forEach(btn => {
-            btn.addEventListener('click', () => switchPage('dashboard'));
-        });
+        document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', () => switchPage('dashboard')));
 
-        // Firebase Sync
-        onValue(syncDocRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data && data.uploadedImage) {
-                displayImage.src = data.uploadedImage;
-            }
-        });
-
-        imageUploadBox.addEventListener('click', () => {
-            fileInput.click();
-        });
+        const fileInput = document.getElementById('fileInput');
+        const displayImage = document.getElementById('displayImage');
+        document.getElementById('imageUploadBox').addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    const base64String = event.target.result;
-                    set(syncDocRef, {
-                        uploadedImage: base64String
-                    });
-                };
+                reader.onload = (ev) => set(syncDocRef, { uploadedImage: ev.target.result });
                 reader.readAsDataURL(file);
             }
+        });
+
+        onValue(syncDocRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.uploadedImage) displayImage.src = data.uploadedImage;
         });
     </script>
 </body>
