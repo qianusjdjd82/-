@@ -3,142 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Board - SAT Suite of Assessments</title>
+    <title>SAT Suite of Assessments – College Board</title>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
-        /* College Board Official Color Palette & Reset */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: "Roboto", Arial, sans-serif; background: #f7f9fa; color: #333333; }
+        /* 100% Pixel Perfect Official Structure Reset */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Roboto", -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
+        body { background-color: #ffffff; color: #333333; overflow-x: hidden; }
 
-        /* Top Utility Yellow Bar */
-        .top-banner { background-color: #fbc02d; color: #000000; padding: 8px 20px; font-size: 13px; font-weight: bold; text-align: center; }
-
-        /* College Board Master Header */
-        .cb-header { background-color: #002244; color: #ffffff; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .cb-logo { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; cursor: pointer; }
-        .cb-logo span { color: #fbc02d; }
-        .cb-nav { display: flex; gap: 25px; list-style: none; font-size: 15px; font-weight: 600; }
-        .cb-nav li { cursor: pointer; opacity: 0.9; transition: opacity 0.2s; }
-        .cb-nav li:hover { opacity: 1; text-decoration: underline; }
-
-        /* Hero Section (Big Banner Area) */
-        .hero-section { background: linear-gradient(rgba(0,34,68,0.8), rgba(0,34,68,0.8)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200') no-repeat center center/cover; color: #ffffff; padding: 60px 40px; text-align: center; }
-        .hero-section h2 { font-size: 38px; font-weight: 700; margin-bottom: 15px; }
-        .hero-section p { font-size: 18px; max-width: 700px; margin: 0 auto 25px auto; opacity: 0.9; }
-
-        /* Main Workspace Container */
-        .main-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-
-        /* Left Side: Interactive Portal Card */
-        .portal-card { background: #ffffff; border-top: 6px solid #0056b3; border-radius: 4px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .portal-card h3 { font-size: 24px; color: #002244; margin-bottom: 20px; font-weight: 700; }
+        /* --- LAYER 1: Top Tiny Utility Navigation (Black/White Style) --- */
+        .utility-bar { width: 100%; height: 40px; background: #ffffff; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; padding: 0 120px; }
+        .util-left { display: flex; align-items: center; height: 100%; }
+        .util-arrow { width: 30px; height: 100%; display: flex; align-items: center; justify-content: center; border-right: 1px solid #e0e0e0; cursor: pointer; color: #555; font-size: 11px; }
+        .sat-suite-logo-badge { background: #0087cb; color: #ffffff; font-weight: bold; font-size: 14px; height: 100%; display: flex; align-items: center; padding: 0 12px; gap: 4px; cursor: pointer; }
+        .sat-suite-logo-badge::before { content: "🎨"; font-size: 12px; opacity: 0.8; }
+        .util-right { display: flex; align-items: center; gap: 24px; }
+        .sign-in-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: bold; color: #000000; cursor: pointer; text-decoration: none; }
+        .sign-in-btn::after { content: "👤"; display: inline-block; background: #000; color: #fff; width: 16px; height: 16px; font-size: 10px; text-align: center; line-height: 16px; border-radius: 50%; }
         
-        /* Input & Workspace Styling */
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 8px; color: #555; }
-        input[type="text"] { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #cccccc; border-radius: 4px; outline: none; transition: border 0.2s; }
-        input[type="text"]:focus { border-color: #002244; box-shadow: 0 0 0 3px rgba(0,34,68,0.1); }
-        
-        /* Official College Board Style Yellow Action Button */
-        .btn-cb-primary { background-color: #fbc02d; color: #000000; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-cb-primary:hover { background-color: #f5b000; }
+        /* Interactive Stealth Hidden Search input mapped directly to your DB save */
+        .search-container { position: relative; display: flex; align-items: center; }
+        .search-box { width: 180px; padding: 4px 28px 4px 8px; font-size: 12px; border: none; border-bottom: 1px solid #999999; outline: none; background: transparent; color: #333; }
+        .search-container::after { content: "🔍"; position: absolute; right: 6px; font-size: 12px; color: #666; pointer-events: none; }
 
-        /* Right Side: Dynamic Dashboard Sync Card */
-        .dashboard-card { background: #002244; color: #ffffff; border-radius: 4px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; }
-        .dashboard-card h4 { font-size: 20px; font-weight: 700; margin-bottom: 15px; border-bottom: 2px solid #fbc02d; padding-bottom: 10px; }
-        .display-box { background: rgba(255,255,255,0.1); border-left: 4px solid #fbc02d; padding: 20px; border-radius: 4px; font-size: 16px; min-height: 120px; line-height: 1.6; word-wrap: break-word; }
+        /* --- LAYER 2: Main Brand Header --- */
+        .main-header { width: 100%; height: 60px; background: #ffffff; display: flex; justify-content: space-between; align-items: center; padding: 0 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .brand-title { font-size: 22px; font-weight: bold; color: #222222; cursor: pointer; letter-spacing: -0.2px; }
+        .main-nav { display: flex; list-style: none; gap: 20px; font-size: 13px; color: #555555; font-weight: 500; align-items: center; }
+        .main-nav li { cursor: pointer; display: flex; align-items: center; gap: 3px; position: relative; transition: color 0.15s; }
+        .main-nav li:hover { color: #0087cb; }
+        .main-nav li.active { color: #000000; font-weight: bold; border-bottom: 2px solid #000000; padding-bottom: 2px; }
+        .has-drop::after { content: "⌃"; display: inline-block; transform: rotate(180deg); font-size: 10px; margin-left: 1px; vertical-align: middle; }
 
-        /* Footer Element */
-        .cb-footer { text-align: center; padding: 30px; color: #777777; font-size: 13px; margin-top: 60px; border-top: 1px solid #dddddd; background: #ffffff; }
-    </style>
-</head>
-<body>
-
-    <div class="top-banner">ALERT: Registration for the Upcoming Digital SAT® is Now Open. Secure Your Seat Today.</div>
-
-    <header class="cb-header">
-        <div class="cb-logo">College<span>Board</span></div>
-        <ul class="cb-nav">
-            <li>SAT Suite</li>
-            <li>BigFuture</li>
-            <li>AP Central</li>
-            <li>My Organizer</li>
-        </ul>
-    </header>
-
-    <section class="hero-section">
-        <h2>Your Gateway to College Success</h2>
-        <p>Manage your assessments, access personalized resources, and track your global data sync journey seamlessly with our real-time platform.</p>
-    </section>
-
-    <main class="main-container">
-        
-        <section class="portal-card">
-            <h3>Student Data Entry Portal</h3>
-            <div class="input-group">
-                <label for="myInput">Update Shared System Profile / Command Input</label>
-                <input type="text" id="myInput" placeholder="Enter status or operational text here...">
-            </div>
-            <button class="btn-cb-primary" onclick="saveData()">Submit Changes</button>
-        </section>
-
-        <section class="dashboard-card">
-            <div>
-                <h4>Live Sync Dashboard</h4>
-                <div class="display-box">
-                    <p id="cloudText">Connecting to cloud terminal...</p>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="cb-footer">
-        © 2026 College Board | SAT® is a registered trademark of the College Board. Powered by Firebase Cluster Sync.
-    </footer>
-
-<script>
-    // Your dedicated Firebase Realtime Database credentials (xindongfang)
-    const firebaseConfig = {
-        apiKey: "AIzaSyDNhhwjtt1W2FX5cAXX20widg9jJlGrBCg",
-        authDomain: "xindongfang.firebaseapp.com",
-        databaseURL: "https://xindongfang-default-rtdb.firebaseio.com",
-        projectId: "xindongfang",
-        storageBucket: "xindongfang.firebasestorage.app",
-        messagingSenderId: "915387291334",
-        appId: "1:915387291334:web:b1629f5173d929fb2d69c7"
-    };
-
-    // Initialize Firebase Services
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    // Write Data Logic linked to the official-looking button
-    function saveData() {
-        const userInput = document.getElementById('myInput').value;
-        
-        database.ref('test_message').set({
-            text: userInput
-        }).then(() => {
-            alert('Saved successfully to xindongfang cloud!');
-        }).catch((error) => {
-            alert('Save failed: ' + error.message);
-        });
-    }
-
-    // Read and Sync Data Logic mapped to the real-time display panel
-    database.ref('test_message').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            document.getElementById('cloudText').innerText = data.text;
-        } else {
-            document.getElementById('cloudText').innerText = "No data active in this stream.";
-        }
-    });
-</script>
-
-</body>
-</html>
+        /* --- LAYER 3: The Massive Blue Hero Banner Section --- */
+        .hero-banner { width: 100%; height: 380px; background: linear-gradient(90deg, #0077c0 0%, #005fa3 45%, transparent 85%), url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200') no-repeat right center/cover; position: relative; display: flex; align-items: center; padding-left: 120px; color: #ffffff; }
+        .hero-content { max-width: 550px; z-index: 2; }
+        .hero-content h1 { font-size: 40px; font-weight: 400; line-height: 1.1
