@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,4 +121,127 @@ iframe {
 <script>
 // ==================== ⚠️ Firebase Configuration (xindongfang) ⚠️ ====================
 const firebaseConfig = {
-  apiKey: "AIzaSyDNhhwjtt1W2FX5cAXX
+  apiKey: "AIzaSyDNhhwjtt1W2FX5cAXX20widg9jJlGrBCg",
+  authDomain: "xindongfang.firebaseapp.com",
+  databaseURL: "https://xindongfang-default-rtdb.firebaseio.com",
+  projectId: "xindongfang",
+  storageBucket: "xindongfang.firebasestorage.app",
+  messagingSenderId: "915387291334",
+  appId: "1:915387291334:web:b1629f5173d929fb2d69c7"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+// ===================================================================================
+
+const colors = [
+"#ff7f11", // orange
+"#ff3b3b", // red
+"#9d4edd", // purple
+"#38b000", // green
+"#3a86ff", // blue
+"#ffd60a", // yellow
+"#00b4d8", // cyan
+"#8d5524", // brown
+"#ff66c4", // pink
+"#6c757d"  // gray
+];
+
+const functions = [
+{name:"Reciprocal Function", link:"https://www.desmos.com/calculator/34zujzfoyj"},
+{name:"Reciprocal Square Function", link:"https://www.desmos.com/calculator/hwgozokqpe"},
+{name:"Polynomial Function", link:"https://www.desmos.com/calculator/iwk1ormcr7"},
+{name:"Trigonometric Asymptote Function", link:"https://www.desmos.com/calculator/hdarhxezos?lang=vi"},
+{name:"Sinusoidal Function", link:"https://www.desmos.com/calculator/ksyci87tvt?lang=vi"},
+{name:"Exponential Function", link:"https://www.desmos.com/calculator/lw3gyefznd"},
+{name:"Logarithmic Function", link:"https://www.desmos.com/calculator"},
+{name:"Extra Exponential Function", link:"https://www.desmos.com/calculator/n45amups5d"},
+{name:"Extra Sinusoidal Function", link:"https://www.desmos.com/calculator/f5lk59t0tq"},
+{name:"Absolute Value Function", link:"https://www.desmos.com/calculator/mewhbk8mq2"}
+];
+
+const container = document.getElementById('container');
+
+functions.forEach((f, i)=>{
+  const card = document.createElement('div');
+  card.className='card';
+
+  card.innerHTML = `
+    <a href="${f.link}" target="_blank" class="card-title-link" style="color:${colors[i]}">
+      ${f.name}
+    </a>
+    <iframe src="${f.link}"></iframe>
+    
+    <div class="editor-toolbar">
+      <button type="button" onclick="execCmd('bold', '${i}')" title="Bold"><b>B</b></button>
+      <button type="button" onclick="execCmd('underline', '${i}')" title="Underline"><u>U</u></button>
+      
+      <input type="color" onchange="execCmd('foreColor', '${i}', this.value)" title="Font Color">
+      
+      <select onchange="execCmd('fontName', '${i}', this.value)" title="Font Family">
+        <option value="Arial">Arial</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Impact">Impact</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Microsoft YaHei">Microsoft YaHei</option>
+        <option value="SimSun">SimSun</option>
+      </select>
+
+      <select onchange="execCmd('fontSize', '${i}', this.value)" title="Font Size">
+        <option value="3">Normal</option>
+        <option value="1">X-Small</option>
+        <option value="2">Small</option>
+        <option value="4">Medium</option>
+        <option value="5">Large</option>
+        <option value="6">X-Large</option>
+        <option value="7">XX-Large</option>
+      </select>
+    </div>
+
+    <div id="text${i}" class="editor-content" contenteditable="true" placeholder="Write your explanation..."></div>
+    
+    <button class="save-btn" onclick="saveToCloud(${i})">Save</button>
+  `;
+
+  container.appendChild(card);
+});
+
+function execCmd(command, index, value = null) {
+  const editor = document.getElementById('text' + index);
+  editor.focus();
+  document.execCommand(command, false, value);
+}
+
+// Real-time Cloud Save Logic linked to your xindongfang DB
+function saveToCloud(i){
+  const content = document.getElementById('text'+i).innerHTML;
+  database.ref('notes/text_' + i).set({
+    htmlContent: content,
+    timestamp: Date.now()
+  }).then(() => {
+    // Hidden execution notification
+    console.log('Saved index ' + i + ' securely to xindongfang cloud.');
+  }).catch((error) => {
+    console.error('Save failed: ' + error.message);
+  });
+}
+
+// Real-time Cloud Data Sync Listening Logic
+window.onload = ()=>{
+  functions.forEach((_, i)=>{
+    database.ref('notes/text_' + i).on('value', (snapshot) => {
+      const data = snapshot.val();
+      const editor = document.getElementById('text' + i);
+      if (data && document.activeElement !== editor) {
+        editor.innerHTML = data.htmlContent;
+      }
+    });
+  });
+}
+</script>
+
+</body>
+</html>
