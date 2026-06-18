@@ -31,7 +31,7 @@
                         margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         #paintSliderDock.drawer-open {
-            width: 440px; 
+            width: 440px;
             opacity: 1;
             margin-left: 16px; 
         }
@@ -61,6 +61,7 @@
 
         <header class="bg-[#eef6ff] border-b border-gray-200/60 fixed top-0 left-0 right-0 z-50 shadow-sm">
             <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center w-full">
+              
                 <div class="flex items-center space-x-2 relative">
                     <div id="logoBtn" class="flex items-center space-x-2 cursor-pointer hover:underline text-blue-600 decoration-blue-600 decoration-2">
                         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="#1e40af">
@@ -77,6 +78,7 @@
 
                 <div class="flex items-center space-x-3 text-gray-700 relative">
                     <span id="headerUserName" class="font-medium text-right bg-transparent select-none">student</span>
+                   
                     <div id="avatarBtn" class="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center font-bold text-sm cursor-pointer overflow-hidden relative group">
                         <img id="headerAvatarImg" src="" class="w-full h-full object-cover hidden">
                         <span id="defaultAvatarIcon">👤</span>
@@ -92,6 +94,7 @@
         </header>
 
         <main class="max-w-5xl w-full mx-auto px-6 py-12 flex-1 relative z-10">
+           
             <div class="mb-14 pt-4">
                 <h1 class="text-4xl text-blue-700 mb-2 font-light">
                     Welcome, <span id="welcomeUserName" class="select-none font-normal">student</span>. Good luck on test day!
@@ -116,13 +119,13 @@
                             <div class="bg-white border border-gray-200 rounded-2xl p-8 max-w-md text-center shadow-sm">
                                 <h3 class="text-lg font-bold text-gray-900 mb-3">You Have No Upcoming Tests</h3>
                                 <p class="text-sm text-black leading-relaxed">
-                                    Tests appear here a few weeks before test day. <span class="font-bold">If you got a paper ticket from your school, <a href="#" class="text-blue-600 underline font-normal">sign out</a> and sign in with it.</span>
+                                    Tests appear here a few weeks before test day.
+                                    <span class="font-bold">If you got a paper ticket from your school, <a href="#" class="text-blue-600 underline font-normal">sign out</a> and sign in with it.</span>
                                 </p>
                             </div>
                         </div>
                         
                         <div class="tab-panel flex items-start items-stretch w-full">
-                            
                             <div class="max-w-md w-full relative flex-shrink-0">
                                 <div id="chatMainBox" class="bg-[#f3f3f3] border border-gray-200 rounded-2xl flex flex-col h-[260px] relative overflow-hidden">
                                     
@@ -135,6 +138,7 @@
                                     </div>
 
                                     <div id="chatWindow" class="chat-container flex-1 overflow-y-auto p-4 space-y-3 flex flex-col"></div>
+                               
                                     <div class="p-2 bg-[#fcfcfc] border-t border-gray-200 flex items-center space-x-2 rounded-b-2xl">
                                         <input id="chatInput" type="text" placeholder="Type a message..." class="flex-1 bg-white border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:border-gray-400">
                                         <button id="sendMsgBtn" class="bg-[#07c160] text-white px-4 py-1.5 rounded-md text-sm font-medium active:brightness-95">msg</button>
@@ -184,7 +188,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -287,7 +290,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
         const firebaseConfig = {
             apiKey: "AIzaSyDNhhwjtt1W2FX5cAXX20widg9jJlGrBCg",
             authDomain: "xindongfang.firebaseapp.com",
@@ -319,7 +321,6 @@
         const chatInput = document.getElementById('chatInput');
         const sendMsgBtn = document.getElementById('sendMsgBtn');
         const chatMainBox = document.getElementById('chatMainBox');
-
         // 拦截遮罩组件节点
         const nicknameInterceptOverlay = document.getElementById('nicknameInterceptOverlay');
         const modalNicknameInput = document.getElementById('modalNicknameInput');
@@ -344,7 +345,6 @@
         const customColorInput = document.getElementById('customColor');
         const pickerBtn = document.getElementById('pickerBtn');
         const clearCanvasBtn = document.getElementById('clearCanvasBtn');
-
         // Accounts Unique Token Persistence
         let myUniqueId = localStorage.getItem('bluebook_device_id');
         if (!myUniqueId) {
@@ -352,15 +352,17 @@
             localStorage.setItem('bluebook_device_id', myUniqueId);
         }
 
-        // 【确保每个用户都是新用户】：首次或每次重载强制重置为 student
-        let chatNickname = "student";
-        localStorage.setItem('bluebook_chat_nickname', chatNickname);
+        // 【优化后的逻辑】：优先获取本地缓存中的旧昵称，没有记录时才默认初始化为 student
+        let chatNickname = localStorage.getItem('bluebook_chat_nickname') || "student";
+        if (!localStorage.getItem('bluebook_chat_nickname')) {
+            localStorage.setItem('bluebook_chat_nickname', chatNickname);
+        }
+        
         let myCustomAvatar = localStorage.getItem('bluebook_chat_avatar_b64') || '';
         
         let currentTabState = 'active'; 
         let isLocalPaintOpen = false;
         let globalUsersCache = {};
-        
         let isFirstChatLoad = true; 
         let lastLoggedChatLength = 0;
 
@@ -444,7 +446,6 @@
             if (data) globalUsersCache = data;
             triggerChatRenderRefresh();
         });
-
         function applyTabTranslation() {
             if (currentTabState === 'past') {
                 mainTabSlider.style.transform = 'translateX(-50%)';
@@ -470,14 +471,12 @@
                 tabPast.innerText = "Past";
             }
             applyTabTranslation();
-            
             // 每次切换选项卡，都要动态核对一下是否开启遮罩拦截层
             checkAndApplyNicknameOverlayState();
         }
 
         tabActive.addEventListener('click', () => updateTabs('active'));
         tabPast.addEventListener('click', () => updateTabs('past'));
-
         // 遮罩层中 Save 按钮的点击事件绑定
         modalSaveBtn.addEventListener('click', () => {
             const inputVal = modalNicknameInput.value.trim();
@@ -485,12 +484,12 @@
                 alert("请输入一个有效且非默认的昵称！");
                 return;
             }
+         
             chatNickname = inputVal;
             localStorage.setItem('bluebook_chat_nickname', chatNickname);
             broadcastMyProfileToRegistry();
             syncGlobalProfileRender();
         });
-
         dontSeeTestBtn.addEventListener('click', () => {
             if (currentTabState === 'past') {
                 isLocalPaintOpen = !isLocalPaintOpen;
@@ -501,7 +500,6 @@
                 }
             }
         });
-
         // Top dropdowns
         avatarBtn.addEventListener('click', (e) => { e.stopPropagation(); avatarMenu.classList.toggle('hidden'); });
         menuChangeName.addEventListener('click', () => {
@@ -527,7 +525,6 @@
                 reader.readAsDataURL(file);
             }
         });
-
         // 密码加密清理控制
         secureClearChatBtn.addEventListener('click', () => {
             const userPassword = prompt("请输入系统固件管理员数据清空密码以继续:");
@@ -543,7 +540,6 @@
                 alert("❌ 授权失败：管理密码错误，无法执行清空！");
             }
         });
-
         function sendMessage() {
             const text = chatInput.value.trim();
             if (text !== "") {
@@ -580,7 +576,6 @@
             currentChatSnapshotList = newList;
             triggerChatRenderRefresh();
         });
-
         function triggerChatRenderRefresh() {
             chatWindow.innerHTML = "";
             if (currentChatSnapshotList.length === 0) return;
@@ -630,7 +625,6 @@
         let lastY = 0;
         let selectedColor = '#000000';
         let isEyedropperMode = false;
-
         document.querySelectorAll('[data-color]').forEach(chip => {
             chip.addEventListener('click', (e) => {
                 isEyedropperMode = false;
@@ -644,19 +638,16 @@
             pickerBtn.classList.remove('eyedropper-active');
             selectedColor = e.target.value;
         });
-
         pickerBtn.addEventListener('click', () => {
             isEyedropperMode = !isEyedropperMode;
             if (isEyedropperMode) pickerBtn.classList.add('eyedropper-active');
             else pickerBtn.classList.remove('eyedropper-active');
         });
-
         function drawSegment(type, strokeColor, width, x1, y1, x2, y2) {
             ctx.strokeStyle = strokeColor;
             ctx.lineWidth = width;
             ctx.lineCap = (type === 'square') ? 'square' : 'round';
             ctx.lineJoin = 'round';
-
             if (type === 'neon') {
                 ctx.shadowBlur = 10;
                 ctx.shadowColor = strokeColor;
@@ -671,7 +662,6 @@
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
             ctx.stroke();
-
             if (type === 'spray') {
                 for (let i = 0; i < 15; i++) {
                     const offset = (Math.random() - 0.5) * (width * 3);
@@ -712,7 +702,6 @@
             isDrawing = true;
             [lastX, lastY] = [coords.x, coords.y];
         });
-
         canvas.addEventListener('mousemove', (e) => {
             if (!isDrawing || isEyedropperMode) return;
             const coords = getCanvasCoords(e);
@@ -730,10 +719,8 @@
             });
             [lastX, lastY] = [coords.x, coords.y];
         });
-
         canvas.addEventListener('mouseup', () => isDrawing = false);
         canvas.addEventListener('mouseleave', () => isDrawing = false);
-
         onValue(paintRef, (snapshot) => {
             const data = snapshot.val();
             if (!data) {
@@ -744,13 +731,11 @@
                 drawSegment(line.type, line.color, line.width, line.x1, line.y1, line.x2, line.y2);
             });
         });
-
         clearCanvasBtn.addEventListener('click', () => {
             if (confirm("确定要为所有人清空共享画板吗？")) {
                 set(paintRef, null);
             }
         });
-
         // Dropdowns closures
         const logoBtn = document.getElementById('logoBtn');
         const dropdownMenu = document.getElementById('dropdownMenu');
@@ -759,14 +744,12 @@
             dropdownMenu.classList.add('hidden');
             avatarMenu.classList.add('hidden');
         });
-
         const pages = {
             dashboard: document.getElementById('dashboardPage'),
             xdf: document.getElementById('xdfPage'),
             ol: document.getElementById('olPage'),
             practice: document.getElementById('practicePage')
         };
-
         function switchPage(id) {
             Object.values(pages).forEach(p => p.classList.remove('active'));
             pages[id].classList.add('active');
@@ -776,11 +759,9 @@
         document.getElementById('xdfBtn').addEventListener('click', () => switchPage('xdf'));
         document.getElementById('xdfBackHome').addEventListener('click', () => switchPage('dashboard'));
         document.getElementById('olBtn').addEventListener('click', () => switchPage('ol'));
-        
         learnMorePracticeBtn.addEventListener('click', () => switchPage('practice'));
         document.getElementById('practiceCard').addEventListener('click', () => switchPage('practice'));
         document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', () => switchPage('dashboard')));
-
         // Explore Big Future 图片控制
         const fileInput = document.getElementById('fileInput');
         const displayImage = document.getElementById('displayImage');
