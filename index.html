@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bluebook Clone - Ultra Soft Audio Alerts</title>
+    <title>Bluebook Clone - Profile Intercept & Soft Alerts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -124,7 +124,16 @@
                         <div class="tab-panel flex items-start items-stretch w-full">
                             
                             <div class="max-w-md w-full relative flex-shrink-0">
-                                <div id="chatMainBox" class="bg-[#f3f3f3] border border-gray-200 rounded-2xl flex flex-col h-[260px]">
+                                <div id="chatMainBox" class="bg-[#f3f3f3] border border-gray-200 rounded-2xl flex flex-col h-[260px] relative overflow-hidden">
+                                    
+                                    <div id="nicknameInterceptOverlay" class="hidden absolute inset-0 z-40 backdrop-blur-md bg-white/70 flex flex-col items-center justify-center p-6 text-center select-none">
+                                        <label class="text-gray-800 text-sm font-semibold mb-3 tracking-wide">请输入昵称</label>
+                                        <div class="flex items-center space-x-2 w-full max-w-[280px]">
+                                            <input id="modalNicknameInput" type="text" placeholder="输入您的新昵称..." class="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 shadow-sm">
+                                            <button id="modalSaveBtn" class="bg-[#07c160] hover:bg-[#06ad56] text-white px-4 py-2 rounded-lg text-sm font-medium active:scale-[0.98] transition shadow-sm">Save</button>
+                                        </div>
+                                    </div>
+
                                     <div id="chatWindow" class="chat-container flex-1 overflow-y-auto p-4 space-y-3 flex flex-col"></div>
                                     <div class="p-2 bg-[#fcfcfc] border-t border-gray-200 flex items-center space-x-2 rounded-b-2xl">
                                         <input id="chatInput" type="text" placeholder="Type a message..." class="flex-1 bg-white border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:border-gray-400">
@@ -227,7 +236,7 @@
         </main>
 
         <footer class="text-right p-4 text-[10px] text-gray-400 bg-white border-t border-gray-100">
-            VSN-0.9.945 BT-2026-05-12 17:02
+            VSN-1.0.12 BT-2026-05-12 17:30
         </footer>
     </div>
 
@@ -311,6 +320,11 @@
         const sendMsgBtn = document.getElementById('sendMsgBtn');
         const chatMainBox = document.getElementById('chatMainBox');
 
+        // 拦截遮罩组件节点
+        const nicknameInterceptOverlay = document.getElementById('nicknameInterceptOverlay');
+        const modalNicknameInput = document.getElementById('modalNicknameInput');
+        const modalSaveBtn = document.getElementById('modalSaveBtn');
+
         // 名字大同步节点
         const headerUserName = document.getElementById('headerUserName');
         const welcomeUserName = document.getElementById('welcomeUserName');
@@ -338,11 +352,9 @@
             localStorage.setItem('bluebook_device_id', myUniqueId);
         }
 
-        let chatNickname = localStorage.getItem('bluebook_chat_nickname');
-        if (!chatNickname || chatNickname.trim() === "") {
-            chatNickname = "student";
-            localStorage.setItem('bluebook_chat_nickname', chatNickname);
-        }
+        // 【确保每个用户都是新用户】：首次或每次重载强制重置为 student
+        let chatNickname = "student";
+        localStorage.setItem('bluebook_chat_nickname', chatNickname);
         let myCustomAvatar = localStorage.getItem('bluebook_chat_avatar_b64') || '';
         
         let currentTabState = 'active'; 
@@ -352,7 +364,7 @@
         let isFirstChatLoad = true; 
         let lastLoggedChatLength = 0;
 
-        // 【极柔和气泡提示音】
+        // 【极柔和低频提示音】
         function playUltraSoftNotificationSound() {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -362,19 +374,15 @@
                 const mainGain = audioCtx.createGain();
                 mainGain.connect(audioCtx.destination);
 
-                // 微量级音量：仅 0.06，防止任何尖锐感
                 mainGain.gain.setValueAtTime(0, audioCtx.currentTime);
-                mainGain.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 0.008);
-                // 极速衰减（0.22秒），形成干净轻柔的木质感破裂音
-                mainGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.22);
+                mainGain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.008);
+                mainGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
 
-                // 降低主音调（中音E: 329.63Hz），听起来低调、踏实
                 const osc1 = audioCtx.createOscillator();
                 osc1.type = 'sine';
                 osc1.frequency.setValueAtTime(329.63, audioCtx.currentTime);
                 osc1.connect(mainGain);
 
-                // 伴随谐音（中音B: 493.88Hz）
                 const osc2 = audioCtx.createOscillator();
                 osc2.type = 'sine';
                 osc2.frequency.setValueAtTime(493.88, audioCtx.currentTime);
@@ -382,8 +390,8 @@
 
                 osc1.start(audioCtx.currentTime);
                 osc2.start(audioCtx.currentTime);
-                osc1.stop(audioCtx.currentTime + 0.23);
-                osc2.stop(audioCtx.currentTime + 0.23);
+                osc1.stop(audioCtx.currentTime + 0.21);
+                osc2.stop(audioCtx.currentTime + 0.21);
             } catch (err) {
                 console.log(err);
             }
@@ -407,6 +415,24 @@
             } else {
                 headerAvatarImg.classList.add('hidden');
                 defaultAvatarIcon.classList.remove('hidden');
+            }
+
+            // 智能联动逻辑：一旦昵称发生了改变（不再是默认的 student），自动移除模糊拦截层
+            checkAndApplyNicknameOverlayState();
+        }
+
+        // 核心检测：判断是否需要弹出“高斯模糊遮罩昵称输入界面”
+        function checkAndApplyNicknameOverlayState() {
+            if (currentTabState === 'past') {
+                // 如果在 past 界面，且名字依然是默认的 "student"，就立刻降下模糊拦截层
+                if (!chatNickname || chatNickname.trim() === "" || chatNickname === "student") {
+                    nicknameInterceptOverlay.classList.remove('hidden');
+                } else {
+                    nicknameInterceptOverlay.classList.add('hidden');
+                }
+            } else {
+                // 如果切回了 active 界面，默认隐藏拦截层
+                nicknameInterceptOverlay.classList.add('hidden');
             }
         }
         
@@ -444,10 +470,26 @@
                 tabPast.innerText = "Past";
             }
             applyTabTranslation();
+            
+            // 每次切换选项卡，都要动态核对一下是否开启遮罩拦截层
+            checkAndApplyNicknameOverlayState();
         }
 
         tabActive.addEventListener('click', () => updateTabs('active'));
         tabPast.addEventListener('click', () => updateTabs('past'));
+
+        // 遮罩层中 Save 按钮的点击事件绑定
+        modalSaveBtn.addEventListener('click', () => {
+            const inputVal = modalNicknameInput.value.trim();
+            if (!inputVal || inputVal === "student") {
+                alert("请输入一个有效且非默认的昵称！");
+                return;
+            }
+            chatNickname = inputVal;
+            localStorage.setItem('bluebook_chat_nickname', chatNickname);
+            broadcastMyProfileToRegistry();
+            syncGlobalProfileRender();
+        });
 
         dontSeeTestBtn.addEventListener('click', () => {
             if (currentTabState === 'past') {
@@ -464,7 +506,7 @@
         avatarBtn.addEventListener('click', (e) => { e.stopPropagation(); avatarMenu.classList.toggle('hidden'); });
         menuChangeName.addEventListener('click', () => {
             const promptName = prompt("请输入您要更改的新全站昵称:", chatNickname);
-            if (promptName && promptName.trim() !== "") {
+            if (promptName && promptName.trim() !== "" && promptName.trim() !== "student") {
                 chatNickname = promptName.trim();
                 localStorage.setItem('bluebook_chat_nickname', chatNickname);
                 broadcastMyProfileToRegistry();
@@ -521,18 +563,13 @@
             const data = snapshot.val();
             const newList = data ? Object.values(data) : [];
             
-            // 【核心声音控制枢纽】：增加全方位的视野判定
+            // 【核心提示音控制逻辑】：当前界面在 past 则不需要消息声音，不在 past 界面时（即 active）激活接收声音
             if (!isFirstChatLoad && newList.length > lastLoggedChatLength) {
                 const latestMessage = newList[newList.length - 1];
                 
                 if (latestMessage && latestMessage.senderId !== myUniqueId) {
-                    // 判断当前是不是正盯着聊天窗看：
-                    // 条件 1: currentTabState 必须是 'past' (即切到了Past页面)
-                    // 条件 2: isLocalPaintOpen 必须是 false (即没有被画板滑块挤开或挡住)
-                    const isLookingAtChatWindow = (currentTabState === 'past' && !isLocalPaintOpen);
-
-                    // 只有当你【没转向消息窗口】（即没有看着它）时，才播放柔和的声音
-                    if (!isLookingAtChatWindow) {
+                    // 只有当不在past界面（即处于 active 界面）时，才触发接收消息提示音
+                    if (currentTabState !== 'past') {
                         playUltraSoftNotificationSound();
                     }
                 }
