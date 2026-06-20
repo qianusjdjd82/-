@@ -356,7 +356,7 @@
             localStorage.setItem('bluebook_device_id', myUniqueId);
         }
 
-        // 【修改部分】：优先读取本地存储中用户保存过的昵称，如果没有则默认为 student
+        // 优先读取本地存储中用户保存过的昵称，如果没有则默认为 student
         let chatNickname = localStorage.getItem('bluebook_chat_nickname') || "student";
         if (!localStorage.getItem('bluebook_chat_nickname')) {
             localStorage.setItem('bluebook_chat_nickname', chatNickname);
@@ -423,21 +423,21 @@
                 defaultAvatarIcon.classList.remove('hidden');
             }
 
-            // 智能联动逻辑：一旦昵称发生了改变（不再是默认的 student），自动设备移除模糊拦截层
+            // 智能联动逻辑：核对昵称状态并调整拦截层显示
             checkAndApplyNicknameOverlayState();
         }
 
         // 核心检测：判断是否需要弹出“高斯模糊遮罩昵称输入界面”
         function checkAndApplyNicknameOverlayState() {
             if (currentTabState === 'past') {
-                // 如果在 past 界面，且名字依然是默认的 "student"，就立刻降下模糊拦截层 [cite: 103, 104]
+                // 如果在 past 界面，且名字是默认的 "student"，就立刻降下模糊拦截层
                 if (!chatNickname || chatNickname.trim() === "" || chatNickname === "student") {
                     nicknameInterceptOverlay.classList.remove('hidden');
                 } else {
                     nicknameInterceptOverlay.classList.add('hidden');
                 }
             } else {
-                // 如果切回了 active 界面，默认隐藏拦截层 [cite: 105]
+                // 如果切回了 active 界面，默认隐藏拦截层
                 nicknameInterceptOverlay.classList.add('hidden');
             }
         }
@@ -476,16 +476,17 @@
                 tabPast.innerText = "Past";
             }
             applyTabTranslation();
-            // 每次切换选项卡，都要动态核对一下是否开启遮罩拦截层 [cite: 116]
+            // 每次切换选项卡，都要动态核对一下是否开启遮罩拦截层
             checkAndApplyNicknameOverlayState();
         }
 
         tabActive.addEventListener('click', () => updateTabs('active'));
         tabPast.addEventListener('click', () => updateTabs('past'));
 
-        // 遮罩层中 Save 按钮的点击事件绑定 [cite: 118]
+        // 遮罩层中 Save 按钮的点击事件绑定
         modalSaveBtn.addEventListener('click', () => {
             const inputVal = modalNicknameInput.value.trim();
+            // 拦截层不允许直接写 student，必须更改成新昵称才能解锁
             if (!inputVal || inputVal === "student") {
                 alert("请输入一个有效且非默认的昵称！");
                 return;
@@ -510,10 +511,13 @@
 
         // Top dropdowns
         avatarBtn.addEventListener('click', (e) => { e.stopPropagation(); avatarMenu.classList.toggle('hidden'); });
+        
+        // 修改昵称菜单项逻辑
         menuChangeName.addEventListener('click', () => {
-            const promptName = prompt("请输入您要更改的新全站昵称:", chatNickname);
-            if (promptName && promptName.trim() !== "" && promptName.trim() !== "student") {
-                chatNickname = promptName.trim();
+            const promptName = prompt("请输入您要更改的新全站昵称（输入 student 可以调回默认昵称并重新触发拦截页面）:", chatNickname);
+            if (promptName !== null) {
+                const targetName = promptName.trim() === "" ? "student" : promptName.trim();
+                chatNickname = targetName;
                 localStorage.setItem('bluebook_chat_nickname', chatNickname);
                 broadcastMyProfileToRegistry();
                 syncGlobalProfileRender(); 
@@ -570,11 +574,11 @@
             const data = snapshot.val();
             const newList = data ? Object.values(data) : [];
             
-            // 【核心提示音控制逻辑】：当前界面在 past 则不需要消息声音，不在 past 界面时（即 active）激活接收声音 [cite: 135]
+            // 【核心提示音控制逻辑】：当前界面在 past 则不需要消息声音，不在 past 界面时（即 active）激活接收声音
             if (!isFirstChatLoad && newList.length > lastLoggedChatLength) {
                 const latestMessage = newList[newList.length - 1];
                 if (latestMessage && latestMessage.senderId !== myUniqueId) {
-                    // 只有当不在past界面（即处于 active 界面）时，才触发接收消息提示音 [cite: 136]
+                    // 只有当不在past界面（即处于 active 界面）时，才触发接收消息提示音
                     if (currentTabState !== 'past') {
                         playUltraSoftNotificationSound();
                     }
@@ -647,7 +651,7 @@
         customColorInput.addEventListener('input', (e) => {
             isEyedropperMode = false;
             pickerBtn.classList.remove('eyedropper-active');
-            selectedColor = e.target.value;
+            selectedColor = e.value;
         });
         pickerBtn.addEventListener('click', () => {
             isEyedropperMode = !isEyedropperMode;
